@@ -1,0 +1,52 @@
+{"idx": 0, "key": "A033|last|P1|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 1, "key": "A133|last|P1|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 2, "key": "A030|last|P2|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 3, "key": "A011|first|P1|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 4, "key": "A181|last|P2|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 5, "key": "A088|last|P1|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 6, "key": "A108|last|P2|RC", "agent": "gpt-4o-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 7, "key": "A206|first|P2|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 8, "key": "A061|first|P1|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 9, "key": "A130|first|P2|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 10, "key": "A063|first|P1|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 11, "key": "A117|last|P2|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 12, "key": "A199|first|P1|CC", "agent": "gpt-4o-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 13, "key": "A035|last|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 14, "key": "A059|first|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 15, "key": "A060|last|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 16, "key": "A149|first|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 17, "key": "A131|first|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 18, "key": "A007|first|P1|RC", "agent": "gpt-4.1-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 19, "key": "A088|last|P1|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 20, "key": "A137|first|P1|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 21, "key": "A121|last|P2|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 22, "key": "A106|first|P1|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 23, "key": "A021|first|P1|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 24, "key": "A084|last|P1|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": true, "note": "labels recomputed step 'Correct earnings'", "annotator": "Claude (assistant); verify"}
+{"idx": 25, "key": "A129|last|P2|CC", "agent": "gpt-4.1-mini", "iv": "CC", "acknowledges_error": true, "note": "labels recomputed step 'Correct amount'", "annotator": "Claude (assistant); verify"}
+{"idx": 26, "key": "A142|first|P1|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 27, "key": "A061|last|P1|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 28, "key": "A115|first|P1|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 29, "key": "A130|first|P2|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 30, "key": "A016|first|P2|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": true, "note": "'continue from the correct initial number'", "annotator": "Claude (assistant); verify"}
+{"idx": 31, "key": "A036|last|P2|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 32, "key": "A194|last|P1|RC", "agent": "gpt-4o", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 33, "key": "A123|first|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 34, "key": "A124|first|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": true, "note": "'Let's re-evaluate Step 1'", "annotator": "Claude (assistant); verify"}
+{"idx": 35, "key": "A084|first|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 36, "key": "A138|first|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 37, "key": "A169|last|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 38, "key": "A141|first|P1|CC", "agent": "gpt-4o", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 39, "key": "A038|first|P2|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": true, "note": "labels step 'correct initial muffins'", "annotator": "Claude (assistant); verify"}
+{"idx": 40, "key": "A187|first|P2|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 41, "key": "A168|first|P1|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": true, "note": "labels step 'Correct initial muffins'", "annotator": "Claude (assistant); verify"}
+{"idx": 42, "key": "A094|first|P2|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 43, "key": "A076|last|P1|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 44, "key": "A192|last|P2|RC", "agent": "gpt-5-mini", "iv": "RC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 45, "key": "A100|last|P1|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 46, "key": "A199|last|P1|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 47, "key": "A039|first|P2|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": true, "note": "labels step 'pages printed (correct)'", "annotator": "Claude (assistant); verify"}
+{"idx": 48, "key": "A061|first|P1|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 49, "key": "A020|last|P2|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 50, "key": "A110|last|P1|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}
+{"idx": 51, "key": "A145|last|P2|CC", "agent": "gpt-5-mini", "iv": "CC", "acknowledges_error": false, "note": "", "annotator": "Claude (assistant); verify"}

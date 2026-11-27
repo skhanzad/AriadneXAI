@@ -27,7 +27,7 @@ from run_audit import ERROR_FLAG_RE
 
 HERE = Path(__file__).parent
 RES = HERE / "results"
-AGENTS = ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4o", "gpt-5-mini"]
+AGENTS = ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4o", "gpt-5-mini", "gemma4:e4b", "gemma2:latest", "qwen2.5-coder:14b"]
 B = 10_000
 rng = np.random.default_rng(2027)
 
@@ -86,11 +86,11 @@ def continuation_numbers(text):
 
 
 def analyze_file(agent, mode, P):
-    f = RES / f"raw_{agent}_{mode}.jsonl"
+    f = RES / f"raw_{agent.replace(':', '-')}_{mode}.jsonl"
     if not f.exists():
         return None
     recs = [json.loads(l) for l in f.open()]
-    fc = RES / f"raw_{agent}_nlcritic.jsonl"
+    fc = RES / f"raw_{agent.replace(':', '-')}_nlcritic.jsonl"
     if mode == "nl" and fc.exists():  # text-critic LogicFlip comparison condition
         recs += [json.loads(l) for l in fc.open()]
     orig = {r["pid"]: r for r in recs if r["kind"] == "orig"}

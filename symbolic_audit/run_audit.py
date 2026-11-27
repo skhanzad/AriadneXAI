@@ -44,6 +44,10 @@ PRICES = {
     "gpt-5-mini": (0.25, 2.00),
     "gpt-5-nano": (0.05, 0.40),
 }
+# Open-weight models served locally by Ollama (OpenAI-compatible endpoint); no API cost.
+OLLAMA_MODELS = ["qwen2.5-coder:14b", "gemma2:latest", "gemma4:e4b"]
+PRICES.update({m: (0.0, 0.0) for m in OLLAMA_MODELS})
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/v1")
 GLOBAL_CAP_USD = 34.0  # hard stop across all runs (user budget: $40)
 
 NL_SYSTEM = "You are a careful assistant that solves math word problems step by step."
@@ -105,11 +109,15 @@ class Ledger:
 
 class Runner:
     def __init__(self, agent, mode, concurrency, cap_run):
-        self.client = AsyncOpenAI(max_retries=0, timeout=120)
+        if agent in OLLAMA_MODELS:
+            sx.LATEX_OPS = True
+            self.client = AsyncOpenAI(base_url=OLLAMA_URL, api_key="ollama", max_retries=0, timeout=600)
+        else:
+            self.client = AsyncOpenAI(max_retries=0, timeout=120)
         self.agent, self.mode = agent, mode
         self.concurrency = concurrency
         self.ledger = Ledger(agent, cap_run)
-        self.out = RESULTS / f"raw_{agent}_{mode}.jsonl"
+        self.out = RESULTS / f"raw_{agent.replace(':', '-')}_{mode}.jsonl"
         self.done = {}
         if self.out.exists():
             for line in self.out.open():
@@ -120,7 +128,12 @@ class Runner:
 
     async def chat(self, messages, max_tokens):
         kw = dict(model=self.agent, messages=messages)
-        if self.agent.startswith("gpt-5"):
+        if self.agent in OLLAMA_MODELS:
+            kw["temperature"] = 0.7
+            kw["max_tokens"] = max_tokens
+            if self.agent.startswith("gemma4"):
+                kw["reasoning_effort"] = "none"  # disable hidden thinking: its trace could not be intervened on
+        elif self.agent.startswith("gpt-5"):
             kw["reasoning_effort"] = "low"
             kw["max_completion_tokens"] = 6000
         else:
@@ -278,7 +291,7 @@ def main():
     ap.add_argument("--concurrency", type=int, default=16)
     ap.add_argument("--budget", type=float, default=10.0, help="per-run USD cap")
     args = ap.parse_args()
-    if not os.environ.get("OPENAI_API_KEY"):
+    if args.agent not in OLLAMA_MODELS and not os.environ.get("OPENAI_API_KEY"):
         sys.exit("OPENAI_API_KEY not set")
     RESULTS.mkdir(parents=True, exist_ok=True)
     problems = [json.loads(l) for l in open(args.data)]

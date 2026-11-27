@@ -23,7 +23,13 @@ for a in gpt-4o-mini gpt-4.1-mini gpt-4o gpt-5-mini; do
   ../.venv/bin/python run_audit.py --agent $a --mode code
   ../.venv/bin/python run_critic.py --agent $a
 done
+# open-weight agents, served locally by Ollama (no API key; endpoint via OLLAMA_URL)
+for a in gemma2:latest gemma4:e4b qwen2.5-coder:14b; do
+  ollama pull $a
+  ../.venv/bin/python run_audit.py --agent $a --mode nl --concurrency 4
+  ../.venv/bin/python run_audit.py --agent $a --mode code --concurrency 4
+done
 ../.venv/bin/python analyze.py
 ```
 
-The retained runs comprise 26,211 API calls costing US$12.29 at list prices (cached-input discounts ignored). `run_audit.py` enforces a per-run budget (`--budget`) and a global cap of $34.
+The retained runs comprise 26,211 API calls costing US$12.29 at list prices (cached-input discounts ignored), plus 11,252 local Ollama calls. `run_audit.py` enforces a per-run budget (`--budget`) and a global cap of $34.

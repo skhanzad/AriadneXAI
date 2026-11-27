@@ -190,12 +190,24 @@ def parse_steps(text):
     return steps
 
 
+# Read LaTeX operators (\times, \cdot, \div) as arithmetic. Off by default so the GPT runs reproduce
+# exactly as logged; run_audit.py turns it on for the open-weight (Ollama) agents, which write LaTeX.
+LATEX_OPS = False
+_LATEX_OP = {"\\times": "*", "\\cdot": "*", "\\div": "/"}
+
+
 def _expr_tokens(seg, offset):
     """Tokenize an arithmetic expression inside free text: numbers (with spans) and operators."""
     s = seg
     toks = []
     i = 0
     while i < len(s):
+        if LATEX_OPS and s[i] == "\\":
+            cmd = next((c for c in _LATEX_OP if s.startswith(c, i)), None)
+            if cmd:
+                toks.append(("op", _LATEX_OP[cmd], None, None))
+                i += len(cmd)
+                continue
         m = NUM_RE.match(s, i)
         if m and not (i > 0 and (s[i - 1].isalpha())):
             toks.append(("num", m.group(0), offset + m.start(), offset + m.end()))
