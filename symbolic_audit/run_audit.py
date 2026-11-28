@@ -48,7 +48,34 @@ PRICES = {
 OLLAMA_MODELS = ["qwen2.5-coder:14b", "gemma2:latest", "gemma4:e4b"]
 PRICES.update({m: (0.0, 0.0) for m in OLLAMA_MODELS})
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/v1")
-GLOBAL_CAP_USD = 34.0  # hard stop across all runs (user budget: $40)
+GLOBAL_CAP_USD = 34.0  # hard stop across all OpenAI runs (user budget: $40)
+# Non-OpenAI API models served through OpenRouter: alias -> (OpenRouter id, fallback USD/1M in, out).
+# The ledger uses the cost OpenRouter reports per call; the prices are only a fallback.
+OPENROUTER_MODELS = {
+    "claude-sonnet-4.5": ("anthropic/claude-sonnet-4.5", 3.00, 15.00),  # Sonnet 5.5 forces reasoning on
+    "claude-haiku-4.5": ("anthropic/claude-haiku-4.5", 1.00, 5.00),
+    "gemini-2.5-flash": ("google/gemini-2.5-flash", 0.30, 2.50),
+    "llama-4-maverick": ("meta-llama/llama-4-maverick", 0.35, 1.00),
+    "deepseek-v3.2": ("deepseek/deepseek-v3.2", 0.26, 0.38),
+    "mistral-large-2512": ("mistralai/mistral-large-2512", 0.50, 1.50),
+    "qwen3-235b-a22b-2507": ("qwen/qwen3-235b-a22b-2507", 0.14, 0.80),
+    "kimi-k2-0905": ("moonshotai/kimi-k2-0905", 0.60, 2.50),
+    "glm-4.6": ("z-ai/glm-4.6", 0.50, 2.00),
+    "grok-4.3": ("x-ai/grok-4.3", 1.25, 2.50),
+}
+PRICES.update({a: (pi, po) for a, (_, pi, po) in OPENROUTER_MODELS.items()})
+OPENROUTER_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_CAP_USD = float(os.environ.get("OPENROUTER_CAP_USD", 20.0))  # hard stop across all OpenRouter runs
+
+
+def _load_env():
+    """Read KEY=VALUE lines from the repo's .env without overriding the environment."""
+    f = HERE.parent / ".env"
+    if f.exists():
+        for line in f.read_text().splitlines():
+            k, sep, v = line.strip().partition("=")
+            if sep and not k.startswith("#"):
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 NL_SYSTEM = "You are a careful assistant that solves math word problems step by step."
 NL_PROMPT = """Solve the following problem.
@@ -86,10 +113,14 @@ class Ledger:
         self.run_cost = 0.0
         self.prior = self._prior_spend()
 
-    @staticmethod
-    def _prior_spend():
+    def _prior_spend(self):
+        """Spend recorded so far in the same billing pool (OpenRouter or OpenAI)."""
         tot = 0.0
+        pool = set(OPENROUTER_MODELS) if self.agent in OPENROUTER_MODELS else None
         for f in RESULTS.glob("raw_*.jsonl"):
+            is_or = any(f.name.startswith(f"raw_{a}_") for a in OPENROUTER_MODELS)
+            if (pool is not None) != is_or:
+                continue
             for line in f.open():
                 try:
                     tot += json.loads(line).get("cost", 0.0)
@@ -98,20 +129,30 @@ class Ledger:
         return tot
 
     def add(self, usage):
+        if usage.get("cost") is not None:  # billed cost reported by OpenRouter
+            self.run_cost += usage["cost"]
+            return usage["cost"]
         pin, pout = PRICES[self.agent]
         c = (usage["prompt_tokens"] * pin + usage["completion_tokens"] * pout) / 1e6
         self.run_cost += c
         return c
 
     def exceeded(self):
-        return self.run_cost > self.cap_run or self.prior + self.run_cost > GLOBAL_CAP_USD
+        cap = OPENROUTER_CAP_USD if self.agent in OPENROUTER_MODELS else GLOBAL_CAP_USD
+        return self.run_cost > self.cap_run or self.prior + self.run_cost > cap
 
 
 class Runner:
+    PROTOCOLS = ("P1", "P2", "P2F")  # NL injection protocols to run
+
     def __init__(self, agent, mode, concurrency, cap_run):
         if agent in OLLAMA_MODELS:
             sx.LATEX_OPS = True
             self.client = AsyncOpenAI(base_url=OLLAMA_URL, api_key="ollama", max_retries=0, timeout=600)
+        elif agent in OPENROUTER_MODELS:
+            sx.LATEX_OPS = True
+            self.client = AsyncOpenAI(base_url=OPENROUTER_URL, api_key=os.environ["OPENROUTER_API_KEY"],
+                                      max_retries=0, timeout=180)
         else:
             self.client = AsyncOpenAI(max_retries=0, timeout=120)
         self.agent, self.mode = agent, mode
@@ -127,8 +168,14 @@ class Runner:
         self.stopped = False
 
     async def chat(self, messages, max_tokens):
-        kw = dict(model=self.agent, messages=messages)
-        if self.agent in OLLAMA_MODELS:
+        kw = dict(model=OPENROUTER_MODELS[self.agent][0] if self.agent in OPENROUTER_MODELS else self.agent,
+                  messages=messages)
+        if self.agent in OPENROUTER_MODELS:
+            kw["temperature"] = 0.7
+            kw["max_tokens"] = max_tokens
+            # no hidden reasoning: the visible trace is the only trace, as for the other non-reasoning agents
+            kw["extra_body"] = {"reasoning": {"enabled": False}, "usage": {"include": True}}
+        elif self.agent in OLLAMA_MODELS:
             kw["temperature"] = 0.7
             kw["max_tokens"] = max_tokens
             if self.agent.startswith("gemma4"):
@@ -139,7 +186,7 @@ class Runner:
         else:
             kw["temperature"] = 0.7
             kw["max_tokens"] = max_tokens
-        for attempt in range(8):
+        for attempt in range(14 if self.agent in OPENROUTER_MODELS else 8):  # shared OpenRouter providers rate-limit
             try:
                 async with self.sem:
                     resp = await self.client.chat.completions.create(**kw)
@@ -147,6 +194,12 @@ class Runner:
                 usage = {"prompt_tokens": u.prompt_tokens, "completion_tokens": u.completion_tokens,
                          "reasoning_tokens": getattr(getattr(u, "completion_tokens_details", None),
                                                      "reasoning_tokens", 0) or 0}
+                if getattr(u, "cost", None) is not None:
+                    usage["cost"] = float(u.cost)
+                text = resp.choices[0].message.content or ""
+                if (self.agent in OPENROUTER_MODELS and self.mode == "nl"
+                        and text.strip() in ("", NL_SYSTEM)):  # provider glitch: empty or echoed system prompt
+                    raise RuntimeError("empty or echoed response")
                 return resp.choices[0].message.content or "", usage, resp.choices[0].finish_reason
             except Exception as e:  # rate limits, timeouts, 5xx
                 wait = min(60, 2 ** attempt + random.random())
@@ -211,7 +264,7 @@ class Runner:
                     continue
                 new_line, v2 = c
                 prefixes[iv] = ("\n".join([s["line"] for s in steps[:k]] + [new_line]), v2)
-            for prot in ("P1", "P2", "P2F"):
+            for prot in self.PROTOCOLS:
                 for cond, (prefix, v2) in prefixes.items():
                     if prot == "P1":
                         msgs = [sys_m, {"role": "user", "content": user + P1_SUFFIX.format(prefix=prefix)}]
@@ -291,7 +344,11 @@ def main():
     ap.add_argument("--concurrency", type=int, default=16)
     ap.add_argument("--budget", type=float, default=10.0, help="per-run USD cap")
     args = ap.parse_args()
-    if args.agent not in OLLAMA_MODELS and not os.environ.get("OPENAI_API_KEY"):
+    _load_env()
+    if args.agent in OPENROUTER_MODELS:
+        if not os.environ.get("OPENROUTER_API_KEY"):
+            sys.exit("OPENROUTER_API_KEY not set")
+    elif args.agent not in OLLAMA_MODELS and not os.environ.get("OPENAI_API_KEY"):
         sys.exit("OPENAI_API_KEY not set")
     RESULTS.mkdir(parents=True, exist_ok=True)
     problems = [json.loads(l) for l in open(args.data)]

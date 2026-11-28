@@ -29,7 +29,14 @@ for a in gemma2:latest gemma4:e4b qwen2.5-coder:14b; do
   ../.venv/bin/python run_audit.py --agent $a --mode nl --concurrency 4
   ../.venv/bin/python run_audit.py --agent $a --mode code --concurrency 4
 done
+# other providers through OpenRouter (OPENROUTER_API_KEY, read from ../.env if not exported;
+# reasoning disabled, billed cost logged per call)
+for a in claude-sonnet-4.5 claude-haiku-4.5 gemini-2.5-flash llama-4-maverick deepseek-v3.2 \
+         mistral-large-2512 qwen3-235b-a22b-2507 kimi-k2-0905 glm-4.6 grok-4.3; do
+  ../.venv/bin/python run_audit.py --agent $a --mode nl --concurrency 8
+  ../.venv/bin/python run_audit.py --agent $a --mode code --concurrency 8
+done
 ../.venv/bin/python analyze.py
 ```
 
-The retained runs comprise 26,211 API calls costing US$12.29 at list prices (cached-input discounts ignored), plus 11,252 local Ollama calls. `run_audit.py` enforces a per-run budget (`--budget`) and a global cap of $34.
+The retained runs comprise 26,211 API calls costing US$12.29 at list prices (cached-input discounts ignored), plus 49,176 OpenRouter calls costing US$17.50 (billed cost reported by OpenRouter) and 11,252 local Ollama calls. `run_audit.py` enforces a per-run budget (`--budget`), a global cap of $34 for OpenAI runs, and a cap of $20 for OpenRouter runs (`OPENROUTER_CAP_USD`); the caps are read when a run starts, so runs launched in parallel do not see each other's spend.

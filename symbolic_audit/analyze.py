@@ -27,7 +27,10 @@ from run_audit import ERROR_FLAG_RE
 
 HERE = Path(__file__).parent
 RES = HERE / "results"
-AGENTS = ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4o", "gpt-5-mini", "gemma4:e4b", "gemma2:latest", "qwen2.5-coder:14b"]
+AGENTS = ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4o", "gpt-5-mini", "gemma4:e4b", "gemma2:latest", "qwen2.5-coder:14b", "qwen3:8b",
+          # other providers, through OpenRouter
+          "claude-sonnet-4.5", "claude-haiku-4.5", "gemini-2.5-flash", "llama-4-maverick", "deepseek-v3.2",
+          "mistral-large-2512", "qwen3-235b-a22b-2507", "kimi-k2-0905", "glm-4.6", "grok-4.3"]
 B = 10_000
 rng = np.random.default_rng(2027)
 
